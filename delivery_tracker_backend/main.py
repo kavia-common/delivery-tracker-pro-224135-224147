@@ -46,6 +46,40 @@ def create_app() -> FastAPI:
         """Health endpoint returning status, app name, and version."""
         return HealthResponse(status="ok", app=settings.app_name, version=app.version)
 
+    @app.get(
+        "/",
+        summary="Root",
+        description="Root endpoint returns basic info and links to docs.",
+        tags=["health"],
+        responses={200: {"description": "Root information"}},
+    )
+    # PUBLIC_INTERFACE
+    def root() -> dict:
+        """Root endpoint providing a simple message and links to API docs."""
+        return {
+            "message": "Delivery Tracker Backend is running",
+            "docs": "/docs",
+            "redoc": "/redoc",
+            "health": "/health",
+            "version": app.version,
+            "name": settings.app_name,
+        }
+
+    @app.get(
+        "/websocket-usage",
+        summary="WebSocket usage help",
+        description="This project may expose WebSocket endpoints in future versions. Connect using ws(s) scheme to the documented paths. This help route exists for API docs visibility.",
+        tags=["health"],
+        responses={200: {"description": "WebSocket help"}},
+    )
+    # PUBLIC_INTERFACE
+    def websocket_usage() -> dict:
+        """Provides general notes on connecting to WebSocket endpoints (placeholder)."""
+        return {
+            "note": "No WebSocket endpoints are currently exposed. Check future versions.",
+            "example": "wss://<host>/ws/updates",
+        }
+
     return app
 
 app = create_app()
